@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Документация</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+      body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          margin: 0;
+          padding: 20px;
+      }
+      h1 {
+          text-align: center;
+          color: #333;
+      }
+      #documentForm {
+          background: #fff;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          max-width: 600px;
+          margin: 20px auto;
+      }
+      input[type="text"], input[type="date"], textarea {
+          width: 100%;
+          padding: 10px;
+          margin: 10px 0;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          box-sizing: border-box;
+      }
+      button {
+          background-color: #28a745;
+          color: white;
+          padding: 10px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          width: 100%;
+      }
+      button:hover {
+          background-color: #218838;
+      }
+      table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+          background: #fff;
+          border-radius: 8px;
+          overflow: hidden;
+      }
+      th, td {
+          padding: 12px;
+          text-align: left;
+          border-bottom: 1px solid #ccc;
+      }
+      th {
+          background-color: #f8f9fa;
+      }
+      tr:hover {
+          background-color: #f1f1f1;
+      }
+      #searchInput {
+          margin: 20px auto;
+          max-width: 600px;
+          display: block;
+      }
+  </style>
+</head>
+<body>
+  <h1>Документация</h1>
+  <input type="text" id="searchInput" placeholder="Поиск документации..." onkeyup="searchDocuments()">
+  
+  <form id="documentForm">
+      <input type="text" id="document_code" placeholder="Шифр документации" required>
+      <input type="date" id="signing_date" required>
+      <textarea id="change_history" placeholder="История изменений" rows="4"></textarea>
+      <input type="text" id="download_link" placeholder="Ссылка на скачивание">
+      <button type="submit">Добавить документ</button>
+  </form>
+  
+  <table id="documentsList">
+      <thead>
+          <tr>
+              <th>Шифр документации</th>
+              <th>Дата подписи</th>
+              <th>История изменений</th>
+              <th>Ссылка на скачивание</th>
+              <th>Действия</th>
+          </tr>
+      </thead>
+      <tbody>
+          <!-- Данные будут добавлены здесь с помощью JavaScript -->
+      </tbody>
+  </table>
+
+  <script src="script.js"></script>
+  <script>
+      const documents = [];
+
+      document.getElementById('documentForm').addEventListener('submit', function(event) {
+          event.preventDefault();
+          const documentCode = document.getElementById('document_code').value;
+          const signingDate = document.getElementById('signing_date').value;
+          const changeHistory = document.getElementById('change_history').value;
+          const downloadLink = document.getElementById('download_link').value;
+
+          const document = {
+              code: documentCode,
+              date: signingDate,
+              history: changeHistory,
+              link: downloadLink
+          };
+
+          documents.push(document);
+          displayDocuments();
+          this.reset();
+      });
+
+      function displayDocuments() {
+          const tableBody = document.querySelector('#documentsList tbody');
+          tableBody.innerHTML = '';
+          documents.forEach((doc, index) => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                  <td>${doc.code}</td>
+                  <td>${doc.date}</td>
+                  <td>${doc.history}</td>
+                  <td><a href="${doc.link}" target="_blank">${doc.link}</a></td>
+                  <td><button onclick="deleteDocument(${index})">Удалить</button></td>
+              `;
+              tableBody.appendChild(row);
+          });
+      }
+
+      function deleteDocument(index) {
+          documents.splice(index, 1);
+          displayDocuments();
+      }
+
+      function searchDocuments() {
+          const searchValue = document.getElementById('searchInput').value.toLowerCase();
+          const filteredDocuments = documents.filter(doc => 
+              doc.code.toLowerCase().includes(searchValue) ||
+              doc.history.toLowerCase().includes(searchValue)
+          );
+          displayFilteredDocuments(filteredDocuments);
+      }
+
+      function displayFilteredDocuments(filteredDocuments) {
+          const tableBody = document.querySelector('#documentsList tbody');
+          tableBody.innerHTML = '';
+          filteredDocuments.forEach((doc, index) => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                  <td>${doc.code}</td>
+                  <td>${doc.date}</td>
+                  <td>${doc.history}</td>
+                  <td><a href="${doc.link}" target="_blank">${doc.link}</a></td>
+                  <td><button onclick="deleteDocument(${index})">Удалить</button></td>
+              `;
+              tableBody.appendChild(row);
+          });
+      }
+  </script>
+</body>
+</html>
